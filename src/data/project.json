@@ -1,0 +1,34 @@
+[
+  {
+    "id": "1",
+    "Title": "Kalkulator Matematika - Bangun Datar & Ruang",
+    "Description": "Aplikasi web kalkulator matematika yang membantu menghitung luas dan keliling berbagai bangun datar serta volume bangun ruang. Dilengkapi dengan antarmuka yang user-friendly dan hasil perhitungan yang akurat untuk mendukung pembelajaran matematika.",
+    "Img": "/project/web-kalkulator.png",
+    "Demo": "https://kalkulator-matematika-klp4-l477-f3p57m6op.vercel.app/",
+    "Github": "https://github.com/SIRxRIS/Kalkulator-Matematika-klp4",
+    "TechStack": ["Next.js", "Node.js", "Tailwind CSS"],
+    "Features": [
+      "Kalkulator luas bangun datar (persegi, persegi panjang, segitiga, lingkaran, dll)",
+      "Kalkulator keliling bangun datar dengan rumus yang tepat",
+      "Kalkulator volume bangun ruang (kubus, balok, tabung, kerucut, bola)",
+      "Hasil perhitungan real-time saat input dimasukkan",
+      "Panduan rumus matematika untuk setiap bangun"
+    ]
+  },
+  {
+    "id": "DwNZnp62igoW0sswU7J4",
+    "Title": "Masjid Jawahiruzzarqa Web",
+    "Description": "Website resmi Masjid Jawahiruzzarqa yang menyediakan informasi lengkap tentang masjid, jadwal salat, kegiatan rutin, dan fasilitas. Dibangun dengan teknologi modern untuk memberikan pengalaman pengguna yang optimal.",
+    "Img": "/project/web-masjid-jawahiruzzarqa.png",
+    "Demo": "#",
+    "Github": "#",
+    "TechStack": ["React", "Node.js", "Tailwind CSS", "Firebase"],
+    "Features": [
+      "Informasi lengkap tentang Masjid Jawahiruzzarqa",
+      "Jadwal salat yang akurat dan terupdate",
+      "Daftar kegiatan dan acara rutin masjid",
+      "Galeri foto kegiatan masjid",
+      "Sistem informasi berbasis website yang responsif"
+    ]
+  }
+]

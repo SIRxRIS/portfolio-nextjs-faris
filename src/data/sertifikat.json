@@ -1,0 +1,102 @@
+[
+  {
+    "id": "1",
+    "title": "Top 15 Teams Capstone Project",
+    "issuer": "Coding Camp 2025 - SMK",
+    "year": "2025",
+    "category": "Achievement",
+    "description": "Berhasil masuk dalam 15 tim terbaik dalam proyek capstone Coding Camp 2025",
+    "img": "/sertifikat/[Coding Camp 2025 - SMK] Best Capstone Project - FS079D5Y0137.pdf",
+    "type": "pdf"
+  },
+  {
+    "id": "2",
+    "title": "Coding Camp powered by DBS Foundation",
+    "issuer": "DBS Foundation",
+    "year": "2025",
+    "category": "Bootcamp",
+    "description": "Sertifikat completion untuk program Coding Camp yang berfokus pada Front-End dan Back-End Developer",
+    "img": "/sertifikat/[Coding Camp 2025] Certificate - FS079D5Y0137.pdf",
+    "type": "pdf"
+  },
+  {
+    "id": "3",
+    "title": "Belajar Back-End Pemula dengan JavaScript",
+    "issuer": "Dicoding Indonesia",
+    "year": "2025",
+    "category": "Course",
+    "description": "Menguasai konsep dasar back-end development menggunakan JavaScript dan Node.js",
+    "img": "/sertifikat/backend-pemula.pdf",
+    "type": "pdf"
+  },
+  {
+    "id": "4",
+    "title": "Belajar Dasar Git dengan GitHub",
+    "issuer": "Dicoding Indonesia",
+    "year": "2025",
+    "category": "Course",
+    "description": "Memahami konsep version control menggunakan Git dan GitHub untuk kolaborasi proyek",
+    "img": "/sertifikat/sertifikat_belajar-dasar-git-dengan-github.pdf",
+    "type": "pdf"
+  },
+  {
+    "id": "5",
+    "title": "Belajar Dasar Pemrograman JavaScript",
+    "issuer": "Dicoding Indonesia",
+    "year": "2025",
+    "category": "Course",
+    "description": "Menguasai fundamental JavaScript termasuk sintaks, struktur data, dan konsep pemrograman",
+    "img": "/sertifikat/sertifikat_dicoding-javascript-baru.pdf",
+    "type": "pdf"
+  },
+  {
+    "id": "6",
+    "title": "Belajar Membuat Front-End Web untuk Pemula",
+    "issuer": "Dicoding Indonesia",
+    "year": "2025",
+    "category": "Course",
+    "description": "Mempelajari pengembangan front-end web menggunakan HTML, CSS, dan JavaScript",
+    "img": "/sertifikat/sertifikat_front-end_pemula.pdf",
+    "type": "pdf"
+  },
+  {
+    "id": "7",
+    "title": "Memulai Dasar Pemrograman untuk Menjadi Pengembang Software",
+    "issuer": "Dicoding Indonesia",
+    "year": "2025",
+    "category": "Course",
+    "description": "Memahami konsep dasar pemrograman dan mindset seorang pengembang software",
+    "img": "/sertifikat/sertifikat_memulai_dasar_pemrograman_untuk_menjadi_pengembang_software.pdf",
+    "type": "pdf"
+  },
+  {
+    "id": "8",
+    "title": "Pengenalan ke Logika Pemrograman (Programming Logic 101)",
+    "issuer": "Dicoding Indonesia",
+    "year": "2025",
+    "category": "Course",
+    "description": "Mempelajari dasar-dasar logika pemrograman dan algoritma untuk problem solving",
+    "img": "/sertifikat/sertifikat_pengenalan_ke_logika_pemrograman.pdf",
+    "type": "pdf"
+  },
+  {
+    "id": "9",
+    "title": "Belajar Dasar Pemrograman Web",
+    "issuer": "Dicoding Indonesia",
+    "year": "2025",
+    "category": "Course",
+    "description": "Memahami konsep dasar pengembangan web dan teknologi web modern",
+    "img": "/sertifikat/sertifikat-dasar-pemrograman-web-baru.pdf",
+    "type": "pdf"
+  },
+  {
+    "id": "10",
+    "title": "Belajar Fundamental Front-End Web Development",
+    "issuer": "Dicoding Indonesia",
+    "year": "2025",
+    "category": "Course",
+    "description": "Menguasai fundamental front-end development dengan teknik dan tools modern",
+    "img": "/sertifikat/sertifikat-frontend-web-development.pdf",
+    "type": "pdf"
+  }
+]

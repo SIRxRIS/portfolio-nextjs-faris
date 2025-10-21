@@ -67,6 +67,13 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
           strategy="afterInteractive"
         />
+        {/* Cloudflare Web Analytics */}
+        <Script
+          src="https://static.cloudflareinsights.com/beacon.min.js"
+          strategy="afterInteractive"
+          data-cf-beacon='{"token": "51476e25036e4ed6b6d433d0df2465cc"}'
+        />
+        {/* End Cloudflare Web Analytics */}
       </head>
       <body className="bg-[#030014]" suppressHydrationWarning>
         <Providers>

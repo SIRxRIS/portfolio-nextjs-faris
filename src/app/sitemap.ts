@@ -1,16 +1,11 @@
 import { MetadataRoute } from "next";
+import { projectsData } from "@/utils/staticData";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = "https://faris-portfolio.vercel.app";
 
-  // Daftar proyek (bisa diambil dari data proyek jika tersedia)
-  const projects = [
-    { id: "web-kalkulator" },
-    // Tambahkan proyek lain jika ada
-  ];
-
   // Halaman statis
-  const staticPages = [
+  const staticPages: MetadataRoute.Sitemap = [
     {
       url: baseUrl,
       lastModified: new Date(),
@@ -37,8 +32,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     },
   ];
 
-  // Halaman proyek dinamis
-  const projectPages = projects.map((project) => ({
+  // Halaman proyek dinamis dari staticData
+  const projectPages: MetadataRoute.Sitemap = projectsData.map((project) => ({
     url: `${baseUrl}/project/${project.id}`,
     lastModified: new Date(),
     changeFrequency: "monthly" as const,

@@ -43,13 +43,28 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
     }
     const [user, setUser] = useState<AdminUser | null>(null);
     const [loading, setLoading] = useState(false);
-    const [activeTab, setActiveTab] = useState<"projects" | "certificates" | "profile">("projects");
+    const [activeTab, setActiveTab] = useState<"projects" | "certificates" | "profile">(() => {
+        if (typeof window !== "undefined") {
+            const saved = window.localStorage.getItem("adminPanelActiveTab");
+            if (saved === "projects" || saved === "certificates" || saved === "profile") {
+                return saved;
+            }
+        }
+        return "projects";
+    });
     const [projects, setProjects] = useState<Project[]>([]);
     const [certificates, setCertificates] = useState<Certificate[]>([]);
     const [showLoginForm, setShowLoginForm] = useState(true);
     const [loginData, setLoginData] = useState({ email: "", password: "" });
     const [showPassword, setShowPassword] = useState(false);
     const [profilePhoto, setProfilePhoto] = useState("/Photo.png");
+
+    const setActiveTabWithPersist = (tab: "projects" | "certificates" | "profile") => {
+        setActiveTab(tab);
+        if (typeof window !== "undefined") {
+            window.localStorage.setItem("adminPanelActiveTab", tab);
+        }
+    };
 
     // Login form
     const handleLogin = async (e: React.FormEvent) => {
@@ -351,68 +366,73 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
     }
 
     return (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-            <div className="bg-gray-900 rounded-xl w-full max-w-6xl h-[90vh] border border-gray-700 flex flex-col">
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-start md:items-center justify-center p-4 sm:p-6">
+            <div className="bg-gray-900 rounded-xl md:rounded-2xl w-full max-w-6xl h-[90vh] border border-gray-700 flex flex-col overflow-hidden">
                 {/* Header */}
-                <div className="flex items-center justify-between p-6 border-b border-gray-700">
+                <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between p-6 border-b border-gray-700 bg-gray-900/80 backdrop-blur">
                     <h2 className="text-2xl font-bold text-white flex items-center gap-2">
                         <User className="w-6 h-6" />
                         Admin Panel
                     </h2>
-                    <div className="flex items-center gap-4">
-                        <span className="text-gray-300">{user?.email}</span>
-                        <button
-                            onClick={handleMigration}
-                            className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-colors"
-                        >
-                            <Upload className="w-4 h-4" />
-                            Migrasi Data
-                        </button>
-                        <button
-                            onClick={handleLogout}
-                            className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-colors"
-                        >
-                            <LogOut className="w-4 h-4" />
-                            Logout
-                        </button>
-                        <button
-                            onClick={onClose}
-                            className="text-gray-400 hover:text-white transition-colors"
-                        >
-                            <X className="w-6 h-6" />
-                        </button>
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
+                        <span className="text-gray-300 text-sm sm:text-base break-all sm:break-normal">{user?.email}</span>
+                        <div className="flex flex-wrap gap-2 sm:gap-3">
+                            <button
+                                onClick={handleMigration}
+                                className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-colors w-full sm:w-auto justify-center"
+                            >
+                                <Upload className="w-4 h-4" />
+                                Migrasi Data
+                            </button>
+                            <button
+                                onClick={handleLogout}
+                                className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-colors w-full sm:w-auto justify-center"
+                            >
+                                <LogOut className="w-4 h-4" />
+                                Logout
+                            </button>
+                            <button
+                                onClick={onClose}
+                                className="text-gray-400 hover:text-white transition-colors w-full sm:w-auto justify-center flex items-center gap-2"
+                            >
+                                <X className="w-6 h-6" />
+                                <span className="sm:hidden">Close</span>
+                            </button>
+                        </div>
                     </div>
                 </div>
 
                 {/* Tabs */}
-                <div className="flex border-b border-gray-700">
-                    <button
-                        onClick={() => setActiveTab("projects")}
-                        className={`px-6 py-3 font-medium transition-colors ${activeTab === "projects"
-                            ? "text-blue-400 border-b-2 border-blue-400"
-                            : "text-gray-400 hover:text-white"
-                            }`}
-                    >
-                        Projects ({projects.length})
-                    </button>
-                    <button
-                        onClick={() => setActiveTab("certificates")}
-                        className={`px-6 py-3 font-medium transition-colors ${activeTab === "certificates"
-                            ? "text-blue-400 border-b-2 border-blue-400"
-                            : "text-gray-400 hover:text-white"
-                            }`}
-                    >
-                        Certificates ({certificates.length})
-                    </button>
-                    <button
-                        onClick={() => setActiveTab("profile")}
-                        className={`px-6 py-3 font-medium transition-colors ${activeTab === "profile"
-                            ? "text-blue-400 border-b-2 border-blue-400"
-                            : "text-gray-400 hover:text-white"
-                            }`}
-                    >
-                        Profile
-                    </button>
+                <div className="flex border-b border-gray-700 overflow-x-auto">
+                    <div className="flex min-w-full md:min-w-0">
+                        <button
+                            onClick={() => setActiveTabWithPersist("projects")}
+                            className={`flex-1 px-4 sm:px-6 py-3 font-medium transition-colors whitespace-nowrap ${activeTab === "projects"
+                                ? "text-blue-400 border-b-2 border-blue-400"
+                                : "text-gray-400 hover:text-white"
+                                }`}
+                        >
+                            Projects ({projects.length})
+                        </button>
+                        <button
+                            onClick={() => setActiveTabWithPersist("certificates")}
+                            className={`flex-1 px-4 sm:px-6 py-3 font-medium transition-colors whitespace-nowrap ${activeTab === "certificates"
+                                ? "text-blue-400 border-b-2 border-blue-400"
+                                : "text-gray-400 hover:text-white"
+                                }`}
+                        >
+                            Certificates ({certificates.length})
+                        </button>
+                        <button
+                            onClick={() => setActiveTabWithPersist("profile")}
+                            className={`flex-1 px-4 sm:px-6 py-3 font-medium transition-colors whitespace-nowrap ${activeTab === "profile"
+                                ? "text-blue-400 border-b-2 border-blue-400"
+                                : "text-gray-400 hover:text-white"
+                                }`}
+                        >
+                            Profile
+                        </button>
+                    </div>
                 </div>
 
                 {/* Content */}
@@ -438,46 +458,75 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
                                         </button>
                                     </div>
 
-                                    <div className="grid gap-4">
+                                    <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
                                         {projects.map((project) => (
                                             <div
                                                 key={project.id}
-                                                className="bg-gray-800 rounded-lg p-4 border border-gray-700"
+                                                className="bg-gray-800/80 backdrop-blur rounded-xl border border-gray-700 p-4 sm:p-5"
                                             >
-                                                <div className="flex justify-between items-start">
-                                                    <div className="flex-1">
-                                                        <h4 className="text-lg font-semibold text-white mb-2">
+                                                <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+                                                    <div className="flex-1 space-y-3">
+                                                        <h4 className="text-lg font-semibold text-white">
                                                             {project.Title}
                                                         </h4>
-                                                        <p className="text-gray-300 text-sm mb-2">
+                                                        <p className="text-gray-300 text-sm leading-relaxed">
                                                             {project.Description}
                                                         </p>
-                                                        <div className="flex flex-wrap gap-2 mb-2">
+                                                        <div className="flex flex-wrap gap-2">
                                                             {project.TechStack?.map((tech, index) => (
                                                                 <span
                                                                     key={index}
-                                                                    className="bg-blue-600/20 text-blue-300 px-2 py-1 rounded text-xs"
+                                                                    className="bg-blue-600/20 text-blue-300 px-3 py-1 rounded-full text-xs font-medium"
                                                                 >
                                                                     {tech}
                                                                 </span>
                                                             ))}
                                                         </div>
+                                                        <div className="flex flex-wrap gap-2 text-xs text-gray-400">
+                                                            {project.Github && (
+                                                                <a
+                                                                    href={project.Github}
+                                                                    target="_blank"
+                                                                    rel="noopener noreferrer"
+                                                                    className="hover:text-blue-300 underline underline-offset-2"
+                                                                >
+                                                                    GitHub
+                                                                </a>
+                                                            )}
+                                                            {project.Demo && (
+                                                                <a
+                                                                    href={project.Demo}
+                                                                    target="_blank"
+                                                                    rel="noopener noreferrer"
+                                                                    className="hover:text-blue-300 underline underline-offset-2"
+                                                                >
+                                                                    Demo
+                                                                </a>
+                                                            )}
+                                                            {project.Category && (
+                                                                <span className="bg-purple-600/20 text-purple-300 px-2 py-1 rounded-full">
+                                                                    {project.Category}
+                                                                </span>
+                                                            )}
+                                                        </div>
                                                     </div>
-                                                    <div className="flex gap-2 ml-4">
+                                                    <div className="flex flex-col gap-2 w-full sm:w-auto sm:min-w-[140px]">
                                                         <button
                                                             onClick={() => onOpenProjectForm(project)}
-                                                            className="text-blue-400 hover:text-blue-300 p-2"
+                                                            className="text-blue-400 hover:text-blue-300 border border-blue-500/40 hover:border-blue-400 rounded-lg px-4 py-2 flex items-center justify-center gap-2 transition-colors w-full"
                                                         >
                                                             <Edit className="w-4 h-4" />
+                                                            <span>Edit</span>
                                                         </button>
                                                         <button
                                                             onClick={() =>
                                                                 project.id && handleDelete(project.id, "project")
                                                             }
-                                                            className="text-red-400 hover:text-red-300 p-2"
+                                                            className="text-red-400 hover:text-red-300 border border-red-500/40 hover:border-red-400 rounded-lg px-4 py-2 flex items-center justify-center gap-2 transition-colors w-full disabled:opacity-50"
                                                             disabled={!project.id}
                                                         >
                                                             <Trash2 className="w-4 h-4" />
+                                                            <span>Delete</span>
                                                         </button>
                                                     </div>
                                                 </div>
@@ -502,42 +551,68 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
                                         </button>
                                     </div>
 
-                                    <div className="grid gap-4">
+                                    <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
                                         {certificates.map((certificate) => (
                                             <div
                                                 key={certificate.id}
-                                                className="bg-gray-800 rounded-lg p-4 border border-gray-700"
+                                                className="bg-gray-800/80 backdrop-blur rounded-xl border border-gray-700 p-4 sm:p-5"
                                             >
-                                                <div className="flex justify-between items-start">
-                                                    <div className="flex-1">
-                                                        <h4 className="text-lg font-semibold text-white mb-2">
+                                                <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+                                                    <div className="flex-1 space-y-3">
+                                                        <h4 className="text-lg font-semibold text-white">
                                                             {certificate.title}
                                                         </h4>
-                                                        <p className="text-gray-300 text-sm mb-2">
+                                                        <p className="text-gray-300 text-sm leading-relaxed">
                                                             {certificate.issuer} • {certificate.year}
                                                         </p>
-                                                        <p className="text-gray-400 text-sm mb-2">
+                                                        <p className="text-gray-400 text-sm leading-relaxed">
                                                             {certificate.description}
                                                         </p>
-                                                        <span className="bg-green-600/20 text-green-300 px-2 py-1 rounded text-xs">
-                                                            {certificate.category}
-                                                        </span>
+                                                        <div className="flex flex-wrap gap-2 text-xs text-gray-400">
+                                                            {certificate.category && (
+                                                                <span className="bg-green-600/20 text-green-300 px-2 py-1 rounded-full">
+                                                                    {certificate.category}
+                                                                </span>
+                                                            )}
+                                                            {certificate.credentialUrl && (
+                                                                <a
+                                                                    href={certificate.credentialUrl}
+                                                                    target="_blank"
+                                                                    rel="noopener noreferrer"
+                                                                    className="hover:text-green-300 underline underline-offset-2"
+                                                                >
+                                                                    Credential
+                                                                </a>
+                                                            )}
+                                                        </div>
+                                                        <div className="flex flex-wrap gap-2">
+                                                            {certificate.skills?.map((skill, index) => (
+                                                                <span
+                                                                    key={index}
+                                                                    className="bg-emerald-500/20 text-emerald-300 px-3 py-1 rounded-full text-xs font-medium"
+                                                                >
+                                                                    {skill}
+                                                                </span>
+                                                            ))}
+                                                        </div>
                                                     </div>
-                                                    <div className="flex gap-2 ml-4">
+                                                    <div className="flex flex-col gap-2 w-full sm:w-auto sm:min-w-[140px]">
                                                         <button
                                                             onClick={() => onOpenCertificateForm(certificate)}
-                                                            className="text-blue-400 hover:text-blue-300 p-2"
+                                                            className="text-blue-400 hover:text-blue-300 border border-blue-500/40 hover:border-blue-400 rounded-lg px-4 py-2 flex items-center justify-center gap-2 transition-colors w-full"
                                                         >
                                                             <Edit className="w-4 h-4" />
+                                                            <span>Edit</span>
                                                         </button>
                                                         <button
                                                             onClick={() =>
                                                                 certificate.id && handleDelete(certificate.id, "certificate")
                                                             }
-                                                            className="text-red-400 hover:text-red-300 p-2"
+                                                            className="text-red-400 hover:text-red-300 border border-red-500/40 hover:border-red-400 rounded-lg px-4 py-2 flex items-center justify-center gap-2 transition-colors w-full disabled:opacity-50"
                                                             disabled={!certificate.id}
                                                         >
                                                             <Trash2 className="w-4 h-4" />
+                                                            <span>Delete</span>
                                                         </button>
                                                     </div>
                                                 </div>

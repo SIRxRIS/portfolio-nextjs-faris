@@ -10,6 +10,7 @@ import { Save, X, Plus } from "lucide-react";
 import Swal from "sweetalert2";
 import { Project, Certificate } from "@/types";
 import FileUpload from "@/components/FileUpload";
+import { motion } from "framer-motion";
 
 interface ProjectFormProps {
   project?: Project | null;
@@ -140,17 +141,30 @@ export const ProjectForm: React.FC<ProjectFormProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <div className="bg-gray-900 rounded-xl w-full max-w-2xl max-h-[90vh] overflow-auto border border-gray-700">
-        <div className="p-6">
-          <div className="flex items-center justify-between mb-6">
-            <h3 className="text-xl font-bold text-white">
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.2, ease: "easeOut" }}
+      className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-start md:items-center justify-center p-4 sm:p-6"
+    >
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95, y: -20 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        exit={{ opacity: 0, scale: 0.95, y: -20 }}
+        transition={{ duration: 0.25, ease: "easeOut" }}
+        className="bg-gray-900 rounded-xl md:rounded-2xl w-full max-w-2xl max-h-[92vh] border border-gray-700 shadow-xl overflow-hidden"
+      >
+        <div className="p-6 sm:p-8 overflow-y-auto max-h-[92vh]">
+          <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-6">
+            <h3 className="text-xl sm:text-2xl font-bold text-white">
               {project?.id ? "Edit Project" : "Add New Project"}
             </h3>
             <button
               onClick={onCancel}
-              className="text-gray-400 hover:text-white transition-colors"
+              className="text-gray-400 hover:text-white transition-colors self-end"
             >
+              <span className="sr-only">Close</span>
               <X className="w-6 h-6" />
             </button>
           </div>
@@ -190,7 +204,7 @@ export const ProjectForm: React.FC<ProjectFormProps> = ({
               <label className="block text-sm font-medium text-gray-300 mb-2">
                 Tech Stack
               </label>
-              <div className="flex gap-2 mb-2">
+              <div className="flex flex-col sm:flex-row gap-2 mb-2">
                 <input
                   type="text"
                   value={newTech}
@@ -204,9 +218,10 @@ export const ProjectForm: React.FC<ProjectFormProps> = ({
                 <button
                   type="button"
                   onClick={addTechStack}
-                  className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-colors"
+                  className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center justify-center gap-2 transition-colors"
                 >
                   <Plus className="w-4 h-4" />
+                  <span className="text-sm font-medium">Add</span>
                 </button>
               </div>
               <div className="flex flex-wrap gap-2">
@@ -249,7 +264,7 @@ export const ProjectForm: React.FC<ProjectFormProps> = ({
               <label className="block text-sm font-medium text-gray-300 mb-2">
                 Features
               </label>
-              <div className="flex gap-2 mb-2">
+              <div className="flex flex-col sm:flex-row gap-2 mb-2">
                 <input
                   type="text"
                   value={newFeature}
@@ -263,9 +278,10 @@ export const ProjectForm: React.FC<ProjectFormProps> = ({
                 <button
                   type="button"
                   onClick={addFeature}
-                  className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-colors"
+                  className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center justify-center gap-2 transition-colors"
                 >
                   <Plus className="w-4 h-4" />
+                  <span className="text-sm font-medium">Add</span>
                 </button>
               </div>
               <div className="flex flex-wrap gap-2">
@@ -371,8 +387,8 @@ export const ProjectForm: React.FC<ProjectFormProps> = ({
             </div>
           </form>
         </div>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 };
 
@@ -460,17 +476,30 @@ export const CertificateForm: React.FC<CertificateFormProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <div className="bg-gray-900 rounded-xl w-full max-w-2xl max-h-[90vh] overflow-auto border border-gray-700">
-        <div className="p-6">
-          <div className="flex items-center justify-between mb-6">
-            <h3 className="text-xl font-bold text-white">
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.2, ease: "easeOut" }}
+      className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-start md:items-center justify-center p-4 sm:p-6"
+    >
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95, y: -20 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        exit={{ opacity: 0, scale: 0.95, y: -20 }}
+        transition={{ duration: 0.25, ease: "easeOut" }}
+        className="bg-gray-900 rounded-xl md:rounded-2xl w-full max-w-2xl max-h-[92vh] border border-gray-700 shadow-xl overflow-hidden"
+      >
+        <div className="p-6 sm:p-8 overflow-y-auto max-h-[92vh]">
+          <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-6">
+            <h3 className="text-xl sm:text-2xl font-bold text-white">
               {certificate?.id ? "Edit Certificate" : "Add New Certificate"}
             </h3>
             <button
               onClick={onCancel}
-              className="text-gray-400 hover:text-white transition-colors"
+              className="text-gray-400 hover:text-white transition-colors self-end"
             >
+              <span className="sr-only">Close</span>
               <X className="w-6 h-6" />
             </button>
           </div>
@@ -567,7 +596,7 @@ export const CertificateForm: React.FC<CertificateFormProps> = ({
               <label className="block text-sm font-medium text-gray-300 mb-2">
                 Skills
               </label>
-              <div className="flex gap-2 mb-2">
+              <div className="flex flex-col sm:flex-row gap-2 mb-2">
                 <input
                   type="text"
                   value={newSkill}
@@ -581,9 +610,10 @@ export const CertificateForm: React.FC<CertificateFormProps> = ({
                 <button
                   type="button"
                   onClick={addSkill}
-                  className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-colors"
+                  className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center justify-center gap-2 transition-colors"
                 >
                   <Plus className="w-4 h-4" />
+                  <span className="text-sm font-medium">Add</span>
                 </button>
               </div>
               <div className="flex flex-wrap gap-2">
@@ -656,7 +686,7 @@ export const CertificateForm: React.FC<CertificateFormProps> = ({
             </div>
           </form>
         </div>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 };

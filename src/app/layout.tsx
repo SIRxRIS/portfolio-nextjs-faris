@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import { ReactNode } from "react";
 import Script from "next/script";
 import "./globals.css";
-import Navbar from "@/components/Navbar";
 import { Providers } from "./providers";
 import AnimatedBackground from "@/components/Background";
+import Navbar from "@/components/Navbar";
 
 export const metadata: Metadata = {
   title: "Portfolio - Faris Hazim Supriyadi | Full Stack Developer",
@@ -56,7 +56,7 @@ export default function RootLayout({
     ],
     jobTitle: "Full Stack Developer",
     description: "Full Stack Developer berpengalaman dalam React, Next.js, Node.js, dan Firebase",
-  };
+  } as const;
 
   return (
     <html lang="id" suppressHydrationWarning>

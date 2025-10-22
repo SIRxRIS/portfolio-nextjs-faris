@@ -70,25 +70,6 @@ export const authService = {
   // Login admin
   async loginAdmin(email: string, password: string) {
     try {
-      // Demo credentials untuk testing
-      if (email === "admin@demo.com" && password === "admin123") {
-        // Simulasi user object untuk demo
-        const demoUser = {
-          uid: "demo-admin-uid",
-          email: "admin@demo.com",
-          displayName: "Demo Admin",
-        };
-
-        // Simpan ke localStorage untuk persistensi
-        localStorage.setItem("demoAdmin", JSON.stringify(demoUser));
-
-        return {
-          success: true,
-          user: demoUser,
-        };
-      }
-
-      // Jika bukan demo credentials, coba Firebase auth
       const userCredential = await signInWithEmailAndPassword(
         auth,
         email,
@@ -99,8 +80,7 @@ export const authService = {
       console.error("Login error:", error);
       return {
         success: false,
-        error:
-          "Email atau password salah. Gunakan demo: admin@demo.com / admin123",
+        error: "Email atau password salah.",
       };
     }
   },
@@ -108,10 +88,6 @@ export const authService = {
   // Logout admin
   async logoutAdmin() {
     try {
-      // Hapus demo user dari localStorage
-      localStorage.removeItem("demoAdmin");
-
-      // Logout dari Firebase jika ada
       if (auth.currentUser) {
         await signOut(auth);
       }
@@ -131,11 +107,6 @@ export const authService = {
 
   // Get current user
   getCurrentUser() {
-    // Cek demo user di localStorage
-    const demoUser = localStorage.getItem("demoAdmin");
-    if (demoUser) {
-      return JSON.parse(demoUser);
-    }
     return auth.currentUser;
   },
 };

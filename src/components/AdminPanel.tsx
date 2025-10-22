@@ -326,32 +326,6 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
                                 </button>
                             </div>
                         </div>
-
-                        {/* Demo Credentials Info */}
-                        <div className="bg-blue-900/30 border border-blue-700 rounded-lg p-4 mb-4">
-                            <h3 className="text-blue-300 font-medium mb-2">🔑 Demo Login:</h3>
-                            <div className="text-sm text-blue-200 space-y-1">
-                                <p>
-                                    <strong>Email:</strong> admin@demo.com
-                                </p>
-                                <p>
-                                    <strong>Password:</strong> admin123
-                                </p>
-                            </div>
-                            <button
-                                type="button"
-                                onClick={() =>
-                                    setLoginData({
-                                        email: "admin@demo.com",
-                                        password: "admin123",
-                                    })
-                                }
-                                className="mt-2 text-xs bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded transition-colors"
-                            >
-                                Isi Otomatis
-                            </button>
-                        </div>
-
                         <button
                             type="submit"
                             disabled={loading}

@@ -25,6 +25,7 @@ import { db } from "../firebase.js";
 // Collections
 const PROJECTS_COLLECTION = "projects";
 const CERTIFICATES_COLLECTION = "certificates";
+const COMMENTS_COLLECTION = "portfolio-comments";
 
 // Auth instance
 const auth = getAuth();
@@ -318,6 +319,62 @@ export const certificatesService = {
       console.error("Error getting certificates by category:", error);
       const message = error instanceof Error ? error.message : "Unknown error";
       return { success: false, error: message };
+    }
+  },
+};
+
+// ==================== COMMENTS CRUD ====================
+
+export const commentsService = {
+  // Get all comments
+  async getAllComments(): Promise<{
+    success: boolean;
+    data?: any[];
+    error?: string;
+  }> {
+    try {
+      const q = query(
+        collection(db, COMMENTS_COLLECTION),
+        orderBy("createdAt", "desc")
+      );
+      const querySnapshot = await getDocs(q);
+      const comments: any[] = [];
+
+      querySnapshot.forEach((commentDoc) => {
+        comments.push({
+          id: commentDoc.id,
+          ...commentDoc.data(),
+        });
+      });
+
+      return { success: true, data: comments };
+    } catch (error: unknown) {
+      console.error("Error getting comments:", error);
+      const message = error instanceof Error ? error.message : "Unknown error";
+      return { success: false, error: message };
+    }
+  },
+
+  // Delete comment
+  async deleteComment(commentId: string) {
+    try {
+      await deleteDoc(doc(db, COMMENTS_COLLECTION, commentId));
+      return { success: true };
+    } catch (error: any) {
+      console.error("Error deleting comment:", error);
+      return { success: false, error: error.message };
+    }
+  },
+
+  // Update comment (for pinning/unpinning)
+  async updateComment(commentId: string, updates: any) {
+    try {
+      const commentRef = doc(db, COMMENTS_COLLECTION, commentId);
+      await updateDoc(commentRef, updates);
+      return { success: true };
+    } catch (error: any) {
+      console.error("Error updating comment:", error);
+      return { success: false, error: error.message };
     }
   },
 };

@@ -89,25 +89,65 @@ interface CommentFormProps {
   isSubmitting: boolean;
 }
 
+const MIN_COMMENT_LENGTH = 10;
+const MAX_COMMENT_LENGTH = 400;
+const WARNING_THRESHOLD = 350;
+const MAX_NAME_LENGTH = 50;
+
+// Security: Sanitize input to prevent XSS
+const sanitizeInput = (input: string): string => {
+  return input
+    .replace(/[<>]/g, '') // Remove < and > to prevent HTML/script injection
+    .replace(/javascript:/gi, '') // Remove javascript: protocol
+    .replace(/on\w+=/gi, '') // Remove event handlers like onclick=
+    .trim();
+};
+
+// Validate input doesn't contain suspicious patterns
+const isValidInput = (input: string): boolean => {
+  const suspiciousPatterns = [
+    /<script/i,
+    /<iframe/i,
+    /javascript:/i,
+    /on\w+=/i,
+    /eval\(/i,
+    /fetch\(/i,
+    /\.(key|token|password)/i,
+    /collect-keys/i,
+    /data:/i,
+  ];
+  return !suspiciousPatterns.some(pattern => pattern.test(input));
+};
+
 const CommentForm = memo(({ onSubmit, isSubmitting }: CommentFormProps) => {
   const [newComment, setNewComment] = useState("");
   const [userName, setUserName] = useState("");
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
+  const remainingChars = MAX_COMMENT_LENGTH - newComment.length;
+  const isNearLimit = remainingChars <= (MAX_COMMENT_LENGTH - WARNING_THRESHOLD);
+  const isTooShort = newComment.trim().length > 0 && newComment.trim().length < MIN_COMMENT_LENGTH;
+
   const handleTextareaChange = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setNewComment(e.target.value);
-    if (textareaRef.current) {
-      textareaRef.current.style.height = "auto";
-      textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
+    const value = e.target.value;
+    if (value.length <= MAX_COMMENT_LENGTH) {
+      setNewComment(value);
+      if (textareaRef.current) {
+        textareaRef.current.style.height = "auto";
+        textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
+      }
     }
   }, []);
 
   const handleSubmit = useCallback(
     (e: React.FormEvent) => {
       e.preventDefault();
-      if (!newComment.trim() || !userName.trim()) return;
+      const trimmedComment = newComment.trim();
 
-      onSubmit({ newComment, userName });
+      if (!trimmedComment || !userName.trim()) return;
+      if (trimmedComment.length < MIN_COMMENT_LENGTH) return;
+
+      onSubmit({ newComment: trimmedComment, userName: userName.trim() });
       setNewComment("");
       if (textareaRef.current) textareaRef.current.style.height = "auto";
     },
@@ -131,22 +171,49 @@ const CommentForm = memo(({ onSubmit, isSubmitting }: CommentFormProps) => {
       </div>
 
       <div className="space-y-2" data-aos="fade-up" data-aos-duration="1200">
-        <label className="block text-sm font-medium text-white">
-          Message <span className="text-red-400">*</span>
-        </label>
+        <div className="flex items-center justify-between">
+          <label className="block text-sm font-medium text-white">
+            Message <span className="text-red-400">*</span>
+          </label>
+          <span className={`text-xs font-medium transition-colors ${remainingChars < 0
+              ? "text-red-400"
+              : isNearLimit
+                ? "text-yellow-400"
+                : "text-gray-400"
+            }`}>
+            {remainingChars} / {MAX_COMMENT_LENGTH}
+          </span>
+        </div>
         <textarea
           ref={textareaRef}
           value={newComment}
           onChange={handleTextareaChange}
           placeholder="Write your message here..."
-          className="w-full p-4 rounded-xl bg-white/5 border border-white/10 text-white placeholder-gray-400 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition-all resize-none min-h-[120px]"
+          className={`w-full p-4 rounded-xl bg-white/5 border text-white placeholder-gray-400 focus:outline-none focus:ring-2 transition-all resize-none min-h-[120px] ${remainingChars < 0
+              ? "border-red-500 focus:border-red-500 focus:ring-red-500/20"
+              : isNearLimit
+                ? "border-yellow-500/50 focus:border-yellow-500 focus:ring-yellow-500/20"
+                : "border-white/10 focus:border-indigo-500 focus:ring-indigo-500/20"
+            }`}
           required
         />
+        {isTooShort && (
+          <p className="text-xs text-yellow-400 flex items-center gap-1">
+            <AlertCircle className="w-3 h-3" />
+            Minimum {MIN_COMMENT_LENGTH} characters required
+          </p>
+        )}
+        {remainingChars < 0 && (
+          <p className="text-xs text-red-400 flex items-center gap-1">
+            <AlertCircle className="w-3 h-3" />
+            Comment exceeds maximum length
+          </p>
+        )}
       </div>
 
       <button
         type="submit"
-        disabled={isSubmitting}
+        disabled={isSubmitting || isTooShort || remainingChars < 0}
         data-aos="fade-up"
         data-aos-duration="1000"
         className="relative w-full h-12 bg-gradient-to-r from-[#6366f1] to-[#a855f7] rounded-xl font-medium text-white overflow-hidden group transition-all duration-300 hover:scale-[1.02] hover:shadow-lg active:scale-[0.98] disabled:opacity-50 disabled:hover:scale-100 disabled:cursor-not-allowed"
@@ -237,8 +304,6 @@ const Komentar = () => {
       setIsSubmitting(false);
     }
   }, []);
-
-
 
   const formatDate = useCallback((timestamp: Timestamp | null) => {
     if (!timestamp) return "";

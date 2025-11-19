@@ -6,6 +6,7 @@ import {
     authService,
     projectsService,
     certificatesService,
+    commentsService,
 } from "@/services/firebaseService";
 import {
     User,
@@ -17,6 +18,7 @@ import {
     X,
     Eye,
     EyeOff,
+    Pin,
 } from "lucide-react";
 import Swal from "sweetalert2";
 import FileUpload from "./FileUpload";
@@ -32,6 +34,15 @@ interface AdminPanelProps {
     onOpenCertificateForm: (certificate?: Certificate) => void;
 }
 
+interface CommentData {
+    id: string;
+    content: string;
+    userName: string;
+    isAdmin: boolean;
+    isPinned: boolean;
+    createdAt: any;
+}
+
 const AdminPanel: React.FC<AdminPanelProps> = ({
     onClose,
     onOpenProjectForm,
@@ -43,10 +54,10 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
     }
     const [user, setUser] = useState<AdminUser | null>(null);
     const [loading, setLoading] = useState(false);
-    const [activeTab, setActiveTab] = useState<"projects" | "certificates" | "profile">(() => {
+    const [activeTab, setActiveTab] = useState<"projects" | "certificates" | "comments" | "profile">(() => {
         if (typeof window !== "undefined") {
             const saved = window.localStorage.getItem("adminPanelActiveTab");
-            if (saved === "projects" || saved === "certificates" || saved === "profile") {
+            if (saved === "projects" || saved === "certificates" || saved === "comments" || saved === "profile") {
                 return saved;
             }
         }
@@ -54,12 +65,13 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
     });
     const [projects, setProjects] = useState<Project[]>([]);
     const [certificates, setCertificates] = useState<Certificate[]>([]);
+    const [comments, setComments] = useState<CommentData[]>([]);
     const [showLoginForm, setShowLoginForm] = useState(true);
     const [loginData, setLoginData] = useState({ email: "", password: "" });
     const [showPassword, setShowPassword] = useState(false);
     const [profilePhoto, setProfilePhoto] = useState("/Photo.png");
 
-    const setActiveTabWithPersist = (tab: "projects" | "certificates" | "profile") => {
+    const setActiveTabWithPersist = (tab: "projects" | "certificates" | "comments" | "profile") => {
         setActiveTab(tab);
         if (typeof window !== "undefined") {
             window.localStorage.setItem("adminPanelActiveTab", tab);
@@ -123,9 +135,10 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
     const loadData = async () => {
         setLoading(true);
 
-        const [projectsResult, certificatesResult] = await Promise.all([
+        const [projectsResult, certificatesResult, commentsResult] = await Promise.all([
             projectsService.getAllProjects(),
             certificatesService.getAllCertificates(),
+            commentsService.getAllComments(),
         ]);
 
         if (projectsResult.success && projectsResult.data) {
@@ -134,6 +147,10 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
 
         if (certificatesResult.success && certificatesResult.data) {
             setCertificates(certificatesResult.data as Certificate[]);
+        }
+
+        if (commentsResult.success && commentsResult.data) {
+            setComments(commentsResult.data as CommentData[]);
         }
 
         setLoading(false);
@@ -206,7 +223,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
     };
 
     // Delete item
-    const handleDelete = async (id: string, type: "project" | "certificate") => {
+    const handleDelete = async (id: string, type: "project" | "certificate" | "comment") => {
         const result = await Swal.fire({
             title: "Hapus Item?",
             text: "Data yang dihapus tidak dapat dikembalikan!",
@@ -225,6 +242,8 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
                     deleteResult = await projectsService.deleteProject(id);
                 } else if (type === "certificate") {
                     deleteResult = await certificatesService.deleteCertificate(id);
+                } else if (type === "comment") {
+                    deleteResult = await commentsService.deleteComment(id);
                 }
 
                 if (deleteResult?.success) {
@@ -249,6 +268,38 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
             } finally {
                 setLoading(false);
             }
+        }
+    };
+
+    // Toggle comment pin
+    const handleTogglePin = async (id: string, isPinned: boolean) => {
+        setLoading(true);
+        try {
+            const updateResult = await commentsService.updateComment(id, {
+                isPinned: !isPinned,
+            });
+
+            if (updateResult.success) {
+                await loadData();
+                Swal.fire({
+                    icon: "success",
+                    title: "Berhasil!",
+                    text: !isPinned ? "Komentar berhasil di-pin" : "Komentar berhasil di-unpin",
+                    timer: 2000,
+                    showConfirmButton: false,
+                });
+            } else {
+                throw new Error(updateResult.error || "Unknown error");
+            }
+        } catch (error) {
+            console.error("Error toggling pin:", error);
+            Swal.fire({
+                icon: "error",
+                title: "Error!",
+                text: "Gagal mengubah status komentar. " + (error instanceof Error ? error.message : ""),
+            });
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -396,6 +447,15 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
                                 }`}
                         >
                             Certificates ({certificates.length})
+                        </button>
+                        <button
+                            onClick={() => setActiveTabWithPersist("comments")}
+                            className={`flex-1 px-4 sm:px-6 py-3 font-medium transition-colors whitespace-nowrap ${activeTab === "comments"
+                                ? "text-blue-400 border-b-2 border-blue-400"
+                                : "text-gray-400 hover:text-white"
+                                }`}
+                        >
+                            Comments ({comments.length})
                         </button>
                         <button
                             onClick={() => setActiveTabWithPersist("profile")}
@@ -593,6 +653,99 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
                                             </div>
                                         ))}
                                     </div>
+                                </div>
+                            )}
+
+                            {activeTab === "comments" && (
+                                <div>
+                                    <div className="flex justify-between items-center mb-4">
+                                        <h3 className="text-xl font-semibold text-white">
+                                            Comments Management
+                                        </h3>
+                                    </div>
+
+                                    {comments.length === 0 ? (
+                                        <div className="text-center py-8">
+                                            <p className="text-gray-400">No comments yet</p>
+                                        </div>
+                                    ) : (
+                                        <div className="space-y-4">
+                                            {comments.map((comment) => (
+                                                <div
+                                                    key={comment.id}
+                                                    className={`rounded-xl border p-4 sm:p-5 ${comment.isPinned
+                                                        ? "bg-indigo-500/10 border-indigo-500/30"
+                                                        : "bg-gray-800/80 border-gray-700"
+                                                        }`}
+                                                >
+                                                    <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+                                                        <div className="flex-1 space-y-2">
+                                                            <div className="flex items-center gap-2">
+                                                                <h4 className="font-semibold text-white">
+                                                                    {comment.userName}
+                                                                </h4>
+                                                                {comment.isAdmin && (
+                                                                    <span className="px-2 py-0.5 text-xs bg-red-500/20 text-red-400 rounded-full border border-red-500/30">
+                                                                        Admin
+                                                                    </span>
+                                                                )}
+                                                                {comment.isPinned && (
+                                                                    <span className="px-2 py-0.5 text-xs bg-indigo-500/20 text-indigo-300 rounded-full border border-indigo-500/30 flex items-center gap-1">
+                                                                        <Pin className="w-3 h-3" />
+                                                                        Pinned
+                                                                    </span>
+                                                                )}
+                                                            </div>
+                                                            <p className="text-gray-300 text-sm break-words leading-relaxed">
+                                                                {comment.content}
+                                                            </p>
+                                                            {comment.createdAt && (
+                                                                <p className="text-xs text-gray-500">
+                                                                    {typeof comment.createdAt.toDate === 'function'
+                                                                        ? new Intl.DateTimeFormat("en-US", {
+                                                                            year: "numeric",
+                                                                            month: "short",
+                                                                            day: "numeric",
+                                                                            hour: "2-digit",
+                                                                            minute: "2-digit",
+                                                                        }).format(comment.createdAt.toDate())
+                                                                        : "Unknown date"
+                                                                    }
+                                                                </p>
+                                                            )}
+                                                        </div>
+                                                        <div className="flex flex-col gap-2 w-full sm:w-auto sm:min-w-[140px]">
+                                                            <button
+                                                                onClick={() =>
+                                                                    comment.id && handleTogglePin(comment.id, comment.isPinned)
+                                                                }
+                                                                className={`border rounded-lg px-4 py-2 flex items-center justify-center gap-2 transition-colors w-full ${comment.isPinned
+                                                                    ? "text-indigo-400 hover:text-indigo-300 border-indigo-500/40 hover:border-indigo-400"
+                                                                    : "text-gray-400 hover:text-white border-gray-600 hover:border-gray-400"
+                                                                    }`}
+                                                                disabled={!comment.id}
+                                                            >
+                                                                <Pin className="w-4 h-4" />
+                                                                <span className="text-sm">
+                                                                    {comment.isPinned ? "Unpin" : "Pin"}
+                                                                </span>
+                                                            </button>
+                                                            <button
+                                                                onClick={() =>
+                                                                    comment.id && handleDelete(comment.id, "comment")
+                                                                }
+                                                                className="text-red-400 hover:text-red-300 border border-red-500/40 hover:border-red-400 rounded-lg px-4 py-2 flex items-center justify-center gap-2 transition-colors w-full disabled:opacity-50"
+                                                                disabled={!comment.id}
+                                                            >
+                                                                <Trash2 className="w-4 h-4" />
+                                                                <span className="text-sm">Delete</span>
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
                                 </div>
                             )}
 

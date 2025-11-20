@@ -23,6 +23,7 @@ import {
 import Swal from "sweetalert2";
 import FileUpload from "./FileUpload";
 import { Project, Certificate } from "@/types";
+import { Timestamp } from "firebase/firestore";
 
 // Import data JSON untuk migrasi (pastikan path sesuai)
 // import projectsData from "@/data/project.json";
@@ -40,7 +41,7 @@ interface CommentData {
     userName: string;
     isAdmin: boolean;
     isPinned: boolean;
-    createdAt: any;
+    createdAt: Timestamp | null;
 }
 
 const AdminPanel: React.FC<AdminPanelProps> = ({
